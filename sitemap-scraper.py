@@ -6,6 +6,7 @@ import pandas as pd
 import requests
 from pyppeteer import launch
 import asyncio
+import glob
 
 # Formats
 (
@@ -41,7 +42,13 @@ class SitemapScraper():
             response = requests.get(url)
             self.df = pd.read_xml(response.content)
         else:
-            self.df = pd.read_xml(path)
+            files = glob.glob(path)
+            info(f"Found {len(files)} files")
+            for idx, file in enumerate(files):
+                if idx == 0:
+                    self.df = pd.read_xml(file)
+                else:
+                    self.df = self.df.concat(pd.read_xml(file))
         self.links = self.df['loc']
         self.links = self.links[self.links.apply(filter_predicate)]
         self.link_map = {link: naming_function(link) for link in self.links}
@@ -148,6 +155,6 @@ class SitemapScraper():
 
 if __name__ == '__main__':
     sitemap = SitemapScraper(
-        path='*.xml'
+        path='*.xml' # read all xml files in current directory
     )
     asyncio.get_event_loop().run_until_complete(sitemap.run())
