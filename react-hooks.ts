@@ -66,6 +66,10 @@ function useReactive<T>(defaultValue: T) {
       return target[prop]
     },
     set(target: any, prop: KeyType, value: any) {
+      if (prop === "$$self") {
+        $(value)
+        return;
+      }
       target[prop] = value;
       _[1]((render) => (render + 1) % WRAP_AROUND_BOUND);
       return true
