@@ -43,3 +43,33 @@ function useInterface<T>(defaultValue: T): Interface<T> {
     assign: setState
   };
 }
+
+
+/* 
+ * function: useReactive
+ * ref and reactive from vue as react hooks
+ *
+ * */
+type KeyType = string | symbol
+function useReactive<T>(defaultValue: T) {
+  let value: T | { value: T } = defaultValue
+  if (typeof defaultValue !== 'object') {
+    value = {
+      value: defaultValue
+    }
+  }
+  const [state, $] = useState<T | { value: T }>(value)
+  const _ = useState(0);
+  const WRAP_AROUND_BOUND = 10_000;
+  const proxyHandler = {
+    get(target: any, prop: KeyType, receiver: any) {
+      return target[prop]
+    },
+    set(target: any, prop: KeyType, value: any) {
+      target[prop] = value;
+      _[1]((render) => (render + 1) % WRAP_AROUND_BOUND);
+      return true
+    }
+  }
+  return new Proxy(state, proxyHandler)
+}
