@@ -1,3 +1,4 @@
+/* download file function */
 function download(serializable: object, name?: string) {
   try {
     const serliazed = JSON.stringify(serializable);
@@ -12,6 +13,7 @@ function download(serializable: object, name?: string) {
   }
 }
 
+/* generate random content */
 interface GenContentConfig {
   averageWordLength?: number;
   paragraphLengthInWords?: number;
