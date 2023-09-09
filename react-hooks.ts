@@ -77,3 +77,20 @@ function useReactive<T>(defaultValue: T) {
   }
   return new Proxy(state, proxyHandler)
 }
+
+/*
+ * function: useTimeSeries
+ * returns an array of objects with keys {time, value}
+ * to identify changes to the value of a state over time
+ *
+ * example use case: create a plot of user interaction with a page
+ * to suggest better content
+ * */
+ function useTimeSeries(value: number) {
+  const startTime = useMemo(() => Date.now(), []);
+  const [plot, set] = useState<{ time: number; value: number }[]>([]);
+  useEffect(() => {
+    set([...plot, { time: Date.now() - startTime, value }]);
+  }, [value]);
+  return plot;
+}
